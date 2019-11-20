@@ -1,7 +1,7 @@
 #include "VRmanager.h"
 
 // RX:D2, TX:D1
-VR vrSerial(D2, D1);
+VR vrSerial(D7, D6);
 
 
 void VRmanager::Init()
