@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#include "VoiceRecognitionV3.h"
+#include "VRLib/VoiceRecognitionV3.h"
 #include <ESP8266WiFi.h>
 #include <Ticker.h>
 extern "C" {
@@ -19,10 +19,6 @@ extern "C" {
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-
-#define WIFI_CHANNEL 1
-//MAC ADDRESS OF THE DEVICE YOU ARE SENDING TO
-u8 remoteMac[] = {0x36, 0x33, 0x33, 0x33, 0x33, 0x33};
 
 /**        
   Connection
@@ -157,55 +153,10 @@ void setup()
   if (myVR.load((uint8_t)malestar) >= 0) Serial.println("Malestar-activado");
   if (myVR.load((uint8_t)mirame) >= 0) Serial.println("Mirame-activado");
 
-  //Enable ESP-NOW
-  Serial.println("\r\nESP_Now Controller.");
-  if (esp_now_init() != 0) {
-    Serial.println("[ERROR] Can't init ESP-Now! Restarting....\n\n");
-    display.clearDisplay();
-    display.setTextSize(1); 
-    display.setCursor(0,0); 
-    display.println(F("[ERROR] Can't init ESP-Now!!"));
-    display.display();
-    delay(5000);
-    ESP.restart(); delay(1);
-  }
-  Serial.print("[INFO] Access Point MAC: "); Serial.println(WiFi.softAPmacAddress());
-  Serial.print("[INFO] Station MAC: "); Serial.println(WiFi.macAddress());
-  esp_now_set_self_role(ESP_NOW_ROLE_CONTROLLER);
-  esp_now_add_peer(remoteMac, ESP_NOW_ROLE_SLAVE, WIFI_CHANNEL, NULL, 0);
-  //Sender callback
-  esp_now_register_send_cb([](uint8_t* mac, uint8_t status) {
-    uint8_t m[6];
-    memcpy(m, mac, sizeof(m));
-    Serial.printf("[INFO] Slave MAC: %02X:%02X:%02X:%02X:%02X:%02X\n",
-        m[0], m[1], m[2], m[3], m[4], m[5]);
-    Serial.print("[STATUS] (0=0K - 1=ERROR): "); Serial.println(status);
-  });
-
   display.clearDisplay();
   display.setTextSize(2); 
   display.setCursor(0,0); 
   display.println(F("Ready to\nreceive\ncommands...."));
-  display.display();
-}
-
-void send_to_peer(const char* msg)
-{
-  int result = -1;
-  for (int i=0; i<3; i++) {
-    result = esp_now_send(remoteMac, (u8*)msg, strlen(msg));
-    if (result==0) {
-      break;
-    }
-    Serial.println("\n[ESP_NOW] Try again!\n");
-  }
-
-  //print message
-  Serial.print("\nTx: "); Serial.println(msg);
-  Serial.print("Status: "); Serial.println(result);
-  
-  display.print(F("\nMessage sent, status:"));
-  display.println(result);
   display.display();
 }
 

@@ -1,21 +1,26 @@
 #include <Arduino.h>
-#include "VoiceRecognitionV3.h"
-
-enum mode_t {
-    MODE_RECOGNIZER = 0,
-    MODE_TRAINER
-};
+#include "VRLib/VoiceRecognitionV3.h"
 
 
 class VRmanager
 {
+    enum mode_t {
+        RECOGNIZER_MODE = 0,
+        TRAINER_MODE
+    };
+    
 public:
     VRmanager();
     void Init();
     void SetMode(mode_t mode);
-    void Loop();
+    void Loop();    
+
 private:
-    mode_t op_mode = MODE_RECOGNIZER; //Operation Mode
+    void recognizerMode();
+    void trainerMode();
+
+private:
+    mode_t op_mode = RECOGNIZER_MODE; //Operation Mode
 };
 
 extern VR vrSerial;

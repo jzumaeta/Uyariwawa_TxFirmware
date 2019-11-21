@@ -19,16 +19,30 @@ void VRmanager::SetMode(mode_t mode)
 void VRmanager::Loop()
 {
     //check operation mode
-    if (op_mode == MODE_RECOGNIZER) {
+    if (op_mode == RECOGNIZER_MODE) {
+        recognizerMode();
+    }
+    else if (op_mode == TRAINER_MODE) {
+        trainerMode();
+    }
+}
 
-    }
-    else if (op_mode == MODE_TRAINER) {
 
-    }
-    else {
-        //Unknow state
-        Serial.println("[VR_ERROR] Unknow operation state! Reset...");
-        delay(250);
-        ESP.restart();
-    }
+/**
+ * Recognizer Mode
+ * */
+
+void VRmanager::recognizerMode()
+{
+
+}
+
+
+/**
+ * Trainer Mode
+ * */
+
+void VRmanager::trainerMode()
+{
+
 }
